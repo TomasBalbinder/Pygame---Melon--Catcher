@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 
 pygame.init()
 
@@ -17,12 +18,14 @@ title = load_font.render('Melons Catcher', True, 'gold')
 title_rect = title.get_rect()
 title_rect.center = (widht //2, 40)
 
+#quit game text
+quitgame_font= pygame.font.SysFont('stencil',80)
+
 #character_img
 char_img = pygame.image.load('warrior.PNG').convert_alpha()
 char_size = char_img.get_size()
 char_rect = char_img.get_rect()
 char_rect.center = (char_size[0], height // 2)
-
 
 #moving
 char_moving = 20
@@ -50,11 +53,9 @@ heart_rect2.center = (widht - 180 ,40)
 #sounds
 pygame.mixer.music.load('hero.mp3')
 pygame.mixer.music.play()
-pygame.mixer.music.set_volume(0.05)
+pygame.mixer.music.set_volume(0.04)
 punch_sound = pygame.mixer.Sound("punch.mp3")
 lost_melone_sound = pygame.mixer.Sound('lost_melone.wav')
-
-
 
 #score
 score = 0
@@ -115,7 +116,15 @@ while loop:
             heart_img1.set_alpha(0)           
         else:
             heart_img2.set_alpha(0)
-                               
+            screen.fill((0, 0, 0))
+            quitgame_text = quitgame_font.render(f"QUIT GAME",True, 'gold')
+            quitgame_rect = score_text.get_rect()
+            quitgame_rect.center = (540, height//2)
+            screen.blit(quitgame_text, quitgame_rect)
+            pygame.display.update()
+            time.sleep(4)
+            pygame.quit()
+                                               
         fruit_rect.center = (widht, random.randint(70 + (fruit_size[1]//2), height - (fruit_size[1]//2)))
        
     pygame.display.update()
