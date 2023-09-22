@@ -26,7 +26,7 @@ char_rect.center = (char_size[0], height // 2)
 
 #moving
 char_moving = 20
-fruit_moving = 10
+fruit_moving = 7
 
 #fruit_img
 fruit_img = pygame.image.load('fruit.PNG').convert_alpha()
@@ -47,6 +47,13 @@ heart_img2 = pygame.image.load('heart.png').convert_alpha()
 heart_rect2 = heart_img2.get_rect()
 heart_rect2.center = (widht - 180 ,40)
 
+#sounds
+pygame.mixer.music.load('hero.mp3')
+pygame.mixer.music.play()
+pygame.mixer.music.set_volume(0.05)
+punch_sound = pygame.mixer.Sound("punch.mp3")
+lost_melone_sound = pygame.mixer.Sound('lost_melone.wav')
+
 
 
 #score
@@ -56,7 +63,6 @@ life = 3
 #FPS
 fps = 60
 clock = pygame.time.Clock()
-
 
 loop = True
 while loop:
@@ -72,8 +78,7 @@ while loop:
     screen.blit(char_img,char_rect)
     screen.blit(fruit_img, fruit_rect)
     screen.blit(title, title_rect)
-    
-    
+     
     pygame.draw.line(screen,'gold',(0,70),(widht,70),3)
 
     keys = pygame.key.get_pressed()
@@ -95,30 +100,26 @@ while loop:
     screen.blit(score_text, score_rect)
 
     fruit_rect.x = fruit_rect.x - fruit_moving
-    if char_rect.colliderect(fruit_rect): 
-        fruit_moving = fruit_moving + 0.5                                                                
+    if char_rect.colliderect(fruit_rect):
+        punch_sound.play() 
+        fruit_moving = fruit_moving + 0.3                                                                
         score = score + 1
         fruit_rect.center = (widht, random.randint(70 + (fruit_size[1]//2), height - (fruit_size[1]//2)))
 
     elif fruit_rect.x < 0:
+        lost_melone_sound.play()
         life = life - 1
         if life == 2:
-
-            heart_img.set_alpha(0)
-            
+            heart_img.set_alpha(0)       
         elif life == 1:
             heart_img1.set_alpha(0)           
         else:
             heart_img2.set_alpha(0)
-   
-
-                              
+                               
         fruit_rect.center = (widht, random.randint(70 + (fruit_size[1]//2), height - (fruit_size[1]//2)))
        
     pygame.display.update()
     clock.tick(fps)
-
-
 pygame.quit()
 
     
