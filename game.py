@@ -1,6 +1,5 @@
 import pygame
 import random
-import time
 
 pygame.init()
 
@@ -35,7 +34,7 @@ fruit_moving = 7
 fruit_img = pygame.image.load('fruit.PNG').convert_alpha()
 fruit_size = fruit_img.get_size()
 fruit_rect = fruit_img.get_rect()
-fruit_rect.center = (widht, random.randint(70 + (fruit_size[1]//2), height - (fruit_size[1]//2)))
+fruit_rect.center = (widht, random.randint(100 + (fruit_size[1]//2), height - (fruit_size[1]//2)))
 
 #heart_img
 heart_img = pygame.image.load('heart.png').convert_alpha()
@@ -62,17 +61,58 @@ quitgame_text = quitgame_font.render(f"QUIT GAME",True, 'gold')
 quitgame_rect = quitgame_text.get_rect()
 quitgame_rect.center = (widht//2, height//2)
 
-playagin_text = load_font.render(f"Do you want to play again ? press SPACE",True, 'gold')
+playagin_text = load_font.render(f"Do you want to play again? press SPACE",True, 'gold')
 playagin_rect = playagin_text.get_rect()
 playagin_rect.center = (widht//2, height//2 + 100)
+
+#win_game text
+wngame_text = quitgame_font.render(f"You WON",True, 'gold')
+wngame_rect = quitgame_text.get_rect()
+wngame_rect.center = (widht//2 + 30, height//2)
 
 #score
 score = 0
 life = 3
+win_bar = 15
 
 #FPS
 fps = 60
 clock = pygame.time.Clock()
+
+#shows text when won or lose
+def end_game(life):   
+    screen.fill('black')
+    score_rect.center = (widht//2, height//2 - 100)
+    screen.blit(score_text, score_rect)
+    screen.blit(playagin_text, playagin_rect)
+    if life == 0:
+        screen.blit(quitgame_text, quitgame_rect)
+    else:
+        screen.blit(wngame_text, wngame_rect)
+    pygame.mixer.music.stop()
+    pygame.display.update()
+
+
+# infinit loop for end win or loose game
+def infinit_loop(life, score, loop, win_bar, fruit_moving):
+    pause = True
+    while pause:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pause = False
+                loop = False
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            life = 3
+            score = 0
+            win_bar = 15
+            fruit_moving = 7
+            heart_img.set_alpha(255)
+            heart_img1.set_alpha(255)
+            heart_img2.set_alpha(255)
+            pygame.mixer.music.play()        
+            pause = False 
+    return life, score, loop, win_bar, fruit_moving
 
 loop = True
 while loop:
@@ -88,11 +128,11 @@ while loop:
     screen.blit(char_img,char_rect)
     screen.blit(fruit_img, fruit_rect)
     screen.blit(title, title_rect)
-     
+
     pygame.draw.line(screen,'gold',(0,70),(widht,70),3)
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w] and char_rect.top >70:
+    if keys[pygame.K_w] and char_rect.top >100:
         char_rect.y -= char_moving
 
     if keys[pygame.K_s] and char_rect.bottom < height:
@@ -109,13 +149,19 @@ while loop:
     score_rect.center = (150, 40)
     screen.blit(score_text, score_rect)
 
+    pygame.draw.rect(screen,'green',(widht - (win_bar),75,win_bar,10))
+
     fruit_rect.x = fruit_rect.x - fruit_moving
     if char_rect.colliderect(fruit_rect):
+        win_bar = win_bar + 15
         punch_sound.play() 
         fruit_moving = fruit_moving + 0.3                                                                
         score = score + 1
-        fruit_rect.center = (widht, random.randint(70 + (fruit_size[1]//2), height - (fruit_size[1]//2)))
-    
+        fruit_rect.center = (widht, random.randint(100 + (fruit_size[1]//2), height - (fruit_size[1]//2)))
+        if win_bar >= widht:
+            end_game(life)
+            life, score, loop, win_bar, fruit_moving = infinit_loop(life, score, loop, win_bar, fruit_moving)
+       
     elif fruit_rect.x < 0:
         lost_melone_sound.play()
         life = life - 1
@@ -125,31 +171,9 @@ while loop:
             heart_img1.set_alpha(0)           
         elif life == 0:
             heart_img2.set_alpha(0)
-            screen.fill('black')
-            score_rect.center = (widht//2, height//2 - 100)
-            screen.blit(score_text, score_rect)
-            screen.blit(quitgame_text, quitgame_rect)
-            screen.blit(playagin_text, playagin_rect)
-            pygame.mixer.music.stop()
-            pygame.display.update()
-
-            pause = True
-            while pause:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pause = False
-                        loop = False
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_SPACE]:
-                    life = 3
-                    score = 0
-                    heart_img.set_alpha(255)
-                    heart_img1.set_alpha(255)
-                    heart_img2.set_alpha(255)
-                    pygame.mixer.music.play()
-                    pause = False    
-
-        fruit_rect.center = (widht, random.randint(70 + (fruit_size[1]//2), height - (fruit_size[1]//2)))  
+            end_game(life)
+            life, score, loop, win_bar, fruit_moving = infinit_loop(life, score, loop, win_bar, fruit_moving)
+        fruit_rect.center = (widht, random.randint(100 + (fruit_size[1]//2), height - (fruit_size[1]//2)))  
     pygame.display.update()
     clock.tick(fps)
 pygame.quit()
