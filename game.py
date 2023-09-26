@@ -144,8 +144,9 @@ while loop:
                     heart_img.set_alpha(255)
                     heart_img1.set_alpha(255)
                     heart_img2.set_alpha(255)
+                    pygame.mixer.music.play()
                     pause = False    
-                                                             
+
         fruit_rect.center = (widht, random.randint(70 + (fruit_size[1]//2), height - (fruit_size[1]//2)))  
     pygame.display.update()
     clock.tick(fps)
