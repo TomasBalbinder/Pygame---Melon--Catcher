@@ -126,6 +126,8 @@ while loop:
         elif life == 0:
             heart_img2.set_alpha(0)
             screen.fill('black')
+            score_rect.center = (widht//2, height//2 - 100)
+            screen.blit(score_text, score_rect)
             screen.blit(quitgame_text, quitgame_rect)
             screen.blit(playagin_text, playagin_rect)
             pygame.mixer.music.stop()
